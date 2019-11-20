@@ -6,7 +6,7 @@
 
 ### mapper 自动生成框架对比
 
-![mapper](mybati工具对比.png)
+![mapper](img/mapper.jpg)
 
 ### 参考
 
