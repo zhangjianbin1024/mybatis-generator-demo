@@ -5,7 +5,8 @@
 ### generator-biz 代码生成存放目录
 
 ### mapper 自动生成框架对比
-![mapper](./mybati工具对比.png)
+
+![mapper](mybati工具对比.png)
 
 ### 参考
 
