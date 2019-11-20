@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--
+            SUPPORTS 如果其他bean调用这个方法,在其他bean中声明事务,那就用事务.如果其他bean没有声明事务,那就不用事务.
+            NEVER 必须在一个没有的事务中执行,否则抛出异常(与Propagation.MANDATORY相反)
+            MANDATORY 必须在一个已有的事务中执行,否则抛出异常
+            REQUIRES_NEW 不管是否存在事务,都创建一个新的事务,原来的挂起,新的执行完毕,继续执行老的事务
+            NOT_SUPPORTED 容器不为这个方法开启事务
+            REQUIRED 如果有事务, 那么加入事务, 没有的话新建一个(默认情况下)
+            -->
+            <tx:method name="query*" propagation="SUPPORTS" read-only="true"></tx:method>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"></tx:method>
+            <tx:method name="select*" propagation="SUPPORTS" read-only="true"></tx:method>
+            <tx:method name="exists*" propagation="SUPPORTS" read-only="true"></tx:method>
+            <tx:method name="count*" propagation="SUPPORTS" read-only="true"></tx:method>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception"></tx:method>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"></tx:method>
+            <tx:method name="insert*" propagation="REQUIRED" rollback-for="Exception"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+
+        <!--
+        定义切入点表达式 execution (* com.sample.service.impl..*. *(..))
+        execution()是最常用的切点函数
+        1、execution(): 表达式主体。
+        2、第一个*号：表示返回类型， *号表示所有的类型。
+        3、包名：表示需要拦截的包名，后面的两个句点表示当前包和当前包的所有子包，com.sample.service.impl包、子孙包下所有类的方法。
+        4、第二个*号：表示类名，*号表示所有的类。
+        5、*(..):最后这个星号表示方法名，*号表示所有的方法，后面括弧里面表示方法的参数，两个句点表示任何参数
+         -->
+        <aop:pointcut id="allManagerMethod"
+
+                      expression="execution (* com.myke.tk.tkdemo.service..*.*(..)) or execution(* com.myke.service..*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="allManagerMethod" order="0"/>
+    </aop:config>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>

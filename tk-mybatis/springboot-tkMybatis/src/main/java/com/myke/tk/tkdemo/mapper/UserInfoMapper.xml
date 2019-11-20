@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.myke.tk.tkdemo.mapper.UserInfoMapper">
+  <resultMap id="BaseResultMap" type="com.myke.tk.tkdemo.entity.UserInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="first_name" jdbcType="VARCHAR" property="firstName" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="orderPrice" jdbcType="DECIMAL" property="orderprice" />
+    <result column="mgr" jdbcType="INTEGER" property="mgr" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="version" jdbcType="BIGINT" property="version" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_option" jdbcType="VARCHAR" property="createOption" />
+  </resultMap>
+
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <!--参考：
+
+    http://www.mybatis.org/mybatis-3/zh/index.html
+
+    http://www.mybatis.org/generator/
+
+    https://blog.csdn.net/isea533/article/details/42102297
+    -->
+
+    <!--导入属性配置-->
+    <properties resource="application.properties"></properties>
+
+    <!--1，MyBatis3：默认的值，生成基于MyBatis3.x以上版本的内容，包括XXXBySample；-->
+    <!--2，MyBatis3Simple：类似MyBatis3，只是不生成XXXBySample；-->
+    <context id="mysqlgenerator" targetRuntime="MyBatis3">
+
+
+        <!-- JavaBean 实现 序列化 接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- genenat entity时,生成toString -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <!--覆盖生成XML文件-->
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin"/>
+        <!-- 分页插件 -->
+        <plugin type="com.myke.mybatis.plugin.MySQLLimitPlugin"></plugin>
+
+
+        <!-- 扩展版本：中文注释 -->
+        <!--抑制生成注释，由于生成的注释都是英文的，可以不让它生成-->
+        <commentGenerator type="com.myke.mybatis.comment.MyCommentGenerator">
+            <!--是否抑制所有的注释，默认为false-->
+            <property name="suppressDate" value="true"/>
+            <!--是否抑制注释中的时间，默认为false，这里改为true，不生成时间（如果生成时间，则每次都是新版本，每次都要提交）-->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+
+        <!--数据库链接地址账号密码-->
+        <!--jdbc的数据库连接-->
+        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+        </jdbcConnection>
+
+
+        <!--全局类型处理器，在数据库类型和java类型之间的转换控制-->
+        <javaTypeResolver type="com.myke.mybatis.javatype.MyJavaTypeResolverDefaultImpl">
+            <!--
+               默认false，把jdbc decimal 和 numeric 类型解析为 Integer，
+               为 true时, 把jdbc decimal 和 numeric 类型解析为java.math.BigDecimal
+            -->
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+
+
+        <!--指定自动生成的 POJO置于哪个包下-->
+        <javaModelGenerator targetPackage="${model.targetPackage}"
+                            targetProject="..\generator-biz/src/main/java">
+            <!-- enableSubPackages:是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 指定自动生成的 mapperext.xml置于哪个包下-->
+        <sqlMapGenerator targetPackage="${mapperxml.targetPackage}"
+                         targetProject="..\generator-biz/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+
+        <!-- 客户端代码，生成易于使用的针对Model对象和XML配置文件 的代码
+         type="ANNOTATEDMAPPER",生成Java Model 和基于注解的Mapper对象
+         type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象
+         type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口
+        -->
+        <!--指定自动生成的 DAO接口置于哪个包下-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="${mapper.targetPackage}"
+                             targetProject="..\generator-biz/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+
+        <!--指定数据表名，可以使用_和%通配符-->
+        <table tableName="t_user_info" domainObjectName="t_user_info"
+               enableCountByExample="true" enableUpdateByExample="true"
+               enableDeleteByExample="true" enableSelectByExample="true"
+               selectByExampleQueryId="true">
+            <!-- 自增id -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+
+            <!--
+            将数据库中的字段重命名为实体类的属性:
+
+           column 数据库中字段名
+           property POJO属性名
+           javaType POJO类型
+           jdbcType 数据库字段类型
+           -->
+            <!--<columnOverride column="name" javaType="java.lang.String" jdbcType="VARCHAR"/>-->
+
+            <!--
+            该元素可以用来屏蔽不需要生成的列
+            delimitedColumnName:匹配列名的时候是否区分大小写。如果为true则区分。
+            默认值为false，不区分大小写
+            -->
+            <!--<ignoreColumn column="name"/>-->
+        </table>
+    </context>
+</generatorConfiguration>

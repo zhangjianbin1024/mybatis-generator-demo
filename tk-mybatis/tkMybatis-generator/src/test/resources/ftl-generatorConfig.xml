@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!--
+参考：
+https://github.com/abel533/Mapper/wiki/4.2.codegenerator
+
+https://blog.csdn.net/isea533/article/details/42102297
+
+根据 ftl 文件生成 mapper 、 mapper.xml
+-->
+
+<generatorConfiguration>
+
+    <properties resource="application.properties"></properties>
+
+    <!--
+    flat:该模型为每一张表只生成一个实体类。这个实体类包含表中的所有字段。一般使用这个模型就够了。
+    -->
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <!--
+        useMapperCommentGenerator 是否使用通用 Mapper 提供的注释工具，默认 true 使用，
+        这样在生成代码时会包含字段的注释（目前只有 mysql 和 oracle 支持），
+        设置 false 后会用默认的，或者你可以配置自己的注释插件。
+        -->
+        <property name="useMapperCommentGenerator" value="true"/>
+
+        <!-- JavaBean 实现 序列化 接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- genenat entity时,生成toString -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <!--覆盖生成XML文件-->
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin"/>
+
+
+        <!-- 通用 Mapper 插件，可以生成带注解的实体类-->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <!-- mappers 配置后生成的 Mapper 接口都会自动继承该接口-->
+            <property name="mappers" value="com.myke.tk.base.CrudMapper"/>
+            <!--是否忽略大小写-->
+            <property name="caseSensitive" value="true"/>
+            <!--强制生成注解,为false 时 当数据库列名和实体字段名一致时，则不生成注解-->
+            <property name="forceAnnotation" value="true"/>
+            <!--开始的分隔符-->
+            <property name="beginningDelimiter" value="`"/>
+            <!--结束的分隔符-->
+            <property name="endingDelimiter" value="`"/>
+            <!--是否生成字段名常量-->
+            <property name="generateColumnConsts" value="false"/>
+            <!--是否生成默认的属性的静态方法-->
+            <property name="generateDefaultInstanceMethod" value="false"/>
+
+            <!-- lombok 注解代码生成; 使用 Data 时，Getter,Setter 无效-->
+            <!--<property name="lombok" value="Getter,Setter,Data,ToString,Accessors,EqualsAndHashCode"/>-->
+
+            <!--是否生成swagger注解,包括 @ApiModel和@ApiModelProperty-->
+            <!--<property name="swagger" value="true"/>-->
+        </plugin>
+
+        <!--
+          通用代码生成器插件
+
+          基于模板的插件 TemplateFilePlugin
+          这个插件中除了几个必备的属性外，还可以增加任意的属性，属性完全是为了给模板提供数据。
+          -->
+        <!--mapper接口-->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+            <property name="targetProject" value="${targetProject}"/>
+            <property name="targetPackage" value="${mapper.targetPackage}"/>
+            <property name="templatePath" value="generator/mapper.ftl"/>
+            <property name="mapperSuffix" value="Mapper"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.java"/>
+        </plugin>
+        <!--mapperext.xml-->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+            <property name="targetProject" value="${targetProject}"/>
+            <property name="targetPackage" value="${mapperxml.targetPackage}"/>
+            <property name="mapperPackage" value="${mapper.targetPackage}"/>
+            <property name="templatePath" value="generator/mapperXml.ftl"/>
+            <!--模板中需要的特殊信息都可以通过 <property> 方法设置，例如：mapperSuffix -->
+            <property name="mapperSuffix" value="Mapper"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.xml"/>
+        </plugin>
+
+        <!-- service -->
+        <!--<plugin type="tk.mybatis.mapperext.generator.TemplateFilePlugin">-->
+        <!--<property name="targetProject" value="${targetProject}"/>-->
+        <!--<property name="targetPackage" value="test.service"/>-->
+        <!--<property name="templatePath" value="generator/service.ftl"/>-->
+        <!--&lt;!&ndash;模板中需要的特殊信息都可以通过 <property> 方法设置，例如：mapperSuffix &ndash;&gt;-->
+        <!--<property name="mapperSuffix" value="Service"/>-->
+        <!--<property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.java"/>-->
+        <!--</plugin>-->
+
+
+        <!--测试输出单个文件，每个表都会生成一个对应的文件-->
+        <!--<plugin type="tk.mybatis.mapperext.generator.TemplateFilePlugin">-->
+        <!--<property name="targetProject" value="${targetProject}"/>-->
+        <!--<property name="targetPackage" value="test.one"/>-->
+        <!--<property name="templatePath" value="generator/test-one.ftl"/>-->
+        <!--<property name="fileName" value="${tableClass.shortClassName}Test.txt"/>-->
+        <!--&lt;!&ndash;默认值是下面这个，可以不配置&ndash;&gt;-->
+        <!--<property name="templateFormatter"-->
+        <!--value="tk.mybatis.mapperext.generator.formatter.FreemarkerTemplateFormatter"/>-->
+        <!--</plugin>-->
+        <!--测试输出整个文件，所有表都可用，一次只生成一个文件，用于聚合所有表使用-->
+        <!--<plugin type="tk.mybatis.mapperext.generator.TemplateFilePlugin">-->
+        <!--&lt;!&ndash;单个文件模式， 表的属性在 tableClass 类 中&ndash;&gt;-->
+        <!--<property name="singleMode" value="false"/>-->
+        <!--&lt;!&ndash;项目路径（目录需要已经存在）&ndash;&gt;-->
+        <!--<property name="targetProject" value="${targetProject}"/>-->
+        <!--&lt;!&ndash;生成的包（路径不存在则创建）&ndash;&gt;-->
+        <!--<property name="targetPackage" value="test.all"/>-->
+        <!--&lt;!&ndash;模板路径&ndash;&gt;-->
+        <!--<property name="templatePath" value="generator/test-all.ftl"/>-->
+        <!--&lt;!&ndash;指定生成文件的名字&ndash;&gt;-->
+        <!--<property name="fileName" value="TestAll.txt"/>-->
+
+        <!--&lt;!&ndash;默认值是下面这个，可以不配置，默认使用基于 FreeMarker 的实现!&ndash;&gt;-->
+        <!--<property name="templateFormatter"-->
+        <!--value="tk.mybatis.mapperext.generator.formatter.FreemarkerTemplateFormatter"/>-->
+        <!--</plugin>-->
+
+        <!--jdbc的数据库连接-->
+        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+        </jdbcConnection>
+
+
+        <!--全局类型处理器，在数据库类型和java类型之间的转换控制-->
+        <javaTypeResolver type="com.myke.tk.extmybatis.javatype.MyJavaTypeResolverDefaultImpl">
+            <!--
+                默认false，把jdbc decimal 和 numeric 类型解析为 Integer，
+                为 true时, 把jdbc decimal 和 numeric 类型解析为java.math.BigDecimal
+             -->
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+
+
+        <!--MyBatis 生成器生成 Model-->
+        <javaModelGenerator targetPackage="${model.targetPackage}"
+                            targetProject="${targetProject}">
+
+            <!--
+             所有表的实体类继承统一父类
+            -->
+            <!--<property name="rootClass" value="com.myke.commons.model.po.BasePO"/>-->
+        </javaModelGenerator>
+
+
+        <table tableName="${table.tableName}" domainObjectName="${table.domainObjectName}">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            <!--用于定义实体的重命名规则，常见的用途是取消表前缀-->
+            <!--<domainObjectRenamingRule searchString="^T" replaceString=""/>-->
+
+            <!--公共字段忽略-->
+            <!--<ignoreColumn column="id"/>-->
+            <!--<ignoreColumn column="create_time"/>-->
+            <!--<ignoreColumn column="update_time"/>-->
+        </table>
+    </context>
+</generatorConfiguration>

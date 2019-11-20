@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!--
+参考：
+https://github.com/abel533/Mapper/wiki/4.2.codegenerator
+
+https://blog.csdn.net/isea533/article/details/42102297
+
+使用原使方法生成 model、mapper、mapper.xml
+-->
+
+<generatorConfiguration>
+
+    <properties resource="application.properties"></properties>
+
+    <!--
+    flat:该模型为每一张表只生成一个实体类。这个实体类包含表中的所有字段。一般使用这个模型就够了。
+    -->
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <!--
+        useMapperCommentGenerator 是否使用通用 Mapper 提供的注释工具，默认 true 使用，
+        这样在生成代码时会包含字段的注释（目前只有 mysql 和 oracle 支持），
+        设置 false 后会用默认的，或者你可以配置自己的注释插件。
+        -->
+        <property name="useMapperCommentGenerator" value="true"/>
+
+        <!-- JavaBean 实现 序列化 接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- genenat entity时,生成toString -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <!--覆盖生成XML文件-->
+        <!--<plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin"/>-->
+
+        <!-- 通用 Mapper 插件，可以生成带注解的实体类-->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <!-- mappers 配置后生成的 Mapper 接口都会自动继承该接口-->
+            <!--<property name="mappers" value="tk.mybatis.mapperext.common.Mapper"/>-->
+            <property name="mappers" value="com.myke.tk.base.CrudMapper"/>
+            <!--是否忽略大小写-->
+            <property name="caseSensitive" value="true"/>
+            <!--强制生成注解,为false 时 当数据库列名和实体字段名一致时，则不生成注解-->
+            <property name="forceAnnotation" value="false"/>
+
+            <!--开始的分隔符-->
+            <!--<property name="beginningDelimiter" value="`"/>-->
+            <!--结束的分隔符-->
+            <!--<property name="endingDelimiter" value="`"/>-->
+
+            <!--是否生成字段名常量-->
+            <property name="generateColumnConsts" value="false"/>
+            <!--是否生成默认的属性的静态方法-->
+            <property name="generateDefaultInstanceMethod" value="false"/>
+        </plugin>
+
+        <!--jdbc的数据库连接-->
+        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+        </jdbcConnection>
+
+
+        <!--全局类型处理器，在数据库类型和java类型之间的转换控制-->
+        <javaTypeResolver type="com.myke.tk.extmybatis.javatype.MyJavaTypeResolverDefaultImpl">
+            <!--
+                默认false，把jdbc decimal 和 numeric 类型解析为 Integer，
+                为 true时, 把jdbc decimal 和 numeric 类型解析为java.math.BigDecimal
+             -->
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+
+        <!-- MyBatis 生成器生成 Model -->
+        <javaModelGenerator targetPackage="${model.targetPackage}"
+                            targetProject="${targetProject}"/>
+
+        <!-- MyBatis 生成器生成 XML -->
+        <sqlMapGenerator targetPackage="${mapperxml.targetPackage}"
+                         targetProject="${targetProject}">
+        </sqlMapGenerator>
+
+        <!-- MyBatis 生成器生成 DAO -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="${mapper.targetPackage}"
+                             targetProject="${targetProject}">
+        </javaClientGenerator>
+
+
+        <table tableName="${table.tableName}" domainObjectName="${table.domainObjectName}">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+
+            <!--用于定义实体的重命名规则，常见的用途是取消表前缀-->
+            <!--<domainObjectRenamingRule searchString="^T" replaceString=""/>-->
+
+            <!--用于定义实体的字段重命名规则，常见的用途是取消表前缀-->
+            <!--<columnRenamingRule searchString="^ts_" replaceString=""/>-->
+        </table>
+    </context>
+</generatorConfiguration>

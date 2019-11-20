@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--
+        http://www.cnblogs.com/lichangyun/p/8507900.html
+    -->
+
+    <!--可用于动态从外部获取资源-->
+    <properties resource="application.properties"/>
+
+
+    <settings>
+        <!-- 开启驼峰匹配 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <plugins>
+        <!-- 分页查询插件 -->
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            <property name="dialect" value="mysql"/>
+            <!-- 该参数默认为false -->
+            <!-- 设置为true时，会将RowBounds第一个参数offset当成pageNum页码使用 -->
+            <!-- 和startPage中的pageNum效果一样-->
+            <property name="offsetAsPageNum" value="true"/>
+            <!-- 该参数默认为false -->
+            <!-- 设置为true时，使用RowBounds分页会进行count查询 查询数据总条数-->
+            <property name="rowBoundsWithCount" value="true"/>
+
+            <!--
+            设置为true时，如果pageSize=0或者RowBounds.limit = 0就会查询出全部的结果
+            （相当于没有执行分页查询，但是返回结果仍然是Page类型）
+             -->
+            <!-- <property name="pageSizeZero" value="true"/>-->
+
+            <!-- 3.3.0版本可用 - 分页参数合理化，默认false禁用 -->
+            <!-- 启用合理化时，如果pageNum<1会查询第一页，如果pageNum>pages会查询最后一页 -->
+            <!-- 禁用合理化时，如果pageNum<1或pageNum>pages会返回空数据 -->
+            <property name="reasonable" value="true"/>
+            <!-- 3.5.0版本可用 - 为了支持startPage(Object params)方法 -->
+            <!-- 增加了一个`params`参数来配置参数映射，用于从Map或ServletRequest中取值 -->
+            <!-- 可以配置pageNum,pageSize,count,pageSizeZero,reasonable,不配置映射的用默认值 -->
+            <!-- 不理解该含义的前提下，不要随便复制该配置
+            <property name="params" value="pageNum=start;pageSize=limit;"/>    -->
+        </plugin>
+    </plugins>
+
+
+    <!-- 配置数据库连接的环境 -->
+    <environments default="development">
+        <environment id="development">
+            <!--声明事务管理器      它的类型（type）有：JDBC（基于jdbc的事务） 还有 MANAGED（托管的事务）-->
+            <transactionManager type="JDBC"/>
+            <!--
+            声明数据源，数据源的类型有NOPOOLED ，POOLED ，还有JIDN，在数据量少的话用ONPOOLED，
+            测试和开发过程一般用POOLED，实际运行使用JIDN
+            -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${spring.datasource.driver-class-name}"/>
+                <property name="url" value="${spring.datasource.url}"/>
+                <property name="username" value="${spring.datasource.username}"/>
+                <property name="password" value="${spring.datasource.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--声明我们定义的一个个Mapper类-->
+    <mappers>
+        <!-- 引入Mapper.xml -->
+        <mapper resource="com/myke/mapper/UserInfoMapper.xml"/>
+    </mappers>
+
+
+</configuration>
